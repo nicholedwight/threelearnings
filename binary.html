@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>three.js canvas - geometry - cube</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<style>
+		body {
+			font-family: Monospace;
+			background-color: #f0f0f0;
+			margin: 0px;
+			overflow: hidden;
+		}
+		#status {
+				position:absolute;
+				width:25%;
+				left:2%;
+				top:70%;
+				height:5%;
+				opacity:.9;
+				font: 13px/1.231 "Lucida Grande", Lucida, Verdana, sans-serif;
+			}
+	</style>
+</head>
+
+<body>
+	<div id="status"></div>
+	<script src="js/three.js"></script>
+  <script src="js/controls/OrbitControls.js"></script>
+	<script src="js/renderers/Projector.js"></script>
+	<script src="js/renderers/CanvasRenderer.js"></script>
+  <script src="js/loaders/GLTFLoader.js"></script>
+  <script src="js/Detector.js"></script>
+
+	<script src="js/libs/stats.min.js"></script>
+
+	<script>
+    if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+		var container, stats;
+
+		var camera, scene, renderer;
+
+		var targetRotation = 0;
+		var targetRotationOnMouseDown = 0;
+
+		var mouseX = 0;
+		var mouseXOnMouseDown = 0;
+
+		var windowHalfX = window.innerWidth / 2;
+		var windowHalfY = window.innerHeight / 2;
+    var gltf = null;
+		init();
+		animate();
+
+		function init() {
+			var loadStartTime = Date.now();
+			var status = document.getElementById("status");
+			container = document.createElement('div');
+			document.body.appendChild(container);
+
+			var info = document.createElement('div');
+			info.style.position = 'absolute';
+			info.style.top = '10px';
+			info.style.width = '100%';
+			info.style.textAlign = 'center';
+			info.innerHTML = 'Teapot Binary/glTF';
+			container.appendChild(info);
+
+			camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
+			camera.position.z = 4;
+
+			scene = new THREE.Scene();
+			var ambient = new THREE.AmbientLight(0x444444);
+			scene.add(ambient);
+			var directionalLight = new THREE.DirectionalLight(0xAFEEEE);
+			directionalLight.position.set(0, 0, 1).normalize();
+			scene.add(directionalLight);
+
+
+			var manager = new THREE.LoadingManager();
+	    manager.onProgress = function ( item, loaded, total ) {
+	        console.log( item, loaded, total );
+	    };
+
+	    var loader = new THREE.GLTFLoader();
+
+	    var url = "teapot.gltf";
+	    loader.load(url, function (data) {
+	        var object = data.scene;
+	        object.position.y -= 0.5;
+	        camera.position.copy(new THREE.Vector3(0, 2, 3));
+	        scene.add(object);
+	    });
+
+	    var axis = new THREE.AxisHelper(1000);
+	    scene.add(axis);
+
+			renderer = new THREE.WebGLRenderer();
+			renderer.setClearColor(0xafeeee);
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			container.appendChild(renderer.domElement);
+
+			controls = new THREE.OrbitControls( camera, renderer.domElement );
+	    controls.userPan = false;
+	    controls.userPanSpeed = 0.0;
+	    controls.maxDistance = 5000.0;
+	    controls.maxPolarAngle = Math.PI * 0.495;
+	    controls.autoRotate = true;
+	    controls.autoRotateSpeed = -10.0;
+
+			stats = new Stats();
+			container.appendChild(stats.dom);
+			var loadEndTime = Date.now();
+			var loadTime = (loadEndTime - loadStartTime) / 1000;
+			status.innerHTML = "Load time: " + loadTime.toFixed(2) + " seconds.";
+      // controls = new THREE.OrbitControls( camera, renderer.domElement );
+			// controls.target.set( 0, 12, 0 );
+			// camera.position.set( 2, 18, 28 );
+			// controls.update();
+
+			// document.addEventListener('mousedown', onMouseDown, false);
+			// document.addEventListener('mousemove', onMouseMove, false);
+			// document.addEventListener('mouseup', onMouseUp, false);
+
+			window.addEventListener('resize', onWindowResize, false);
+
+		}
+
+		function onWindowResize() {
+
+			windowHalfX = window.innerWidth / 2;
+			windowHalfY = window.innerHeight / 2;
+
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+
+			renderer.setSize(window.innerWidth, window.innerHeight);
+
+		}
+
+		// var mouseDown = false,
+		// 	mouseX = 0,
+		// 	mouseY = 0;
+    //
+		// function onMouseMove(evt) {
+		// 	if (!mouseDown) {
+		// 		return;
+		// 	}
+    //
+		// 	evt.preventDefault();
+    //
+		// 	var deltaX = evt.clientX - mouseX,
+		// 		deltaY = evt.clientY - mouseY;
+		// 	mouseX = evt.clientX;
+		// 	mouseY = evt.clientY;
+		// 	rotateScene(deltaX, deltaY);
+		// }
+    //
+		// function onMouseDown(evt) {
+		// 	evt.preventDefault();
+    //
+		// 	mouseDown = true;
+		// 	mouseX = evt.clientX;
+		// 	mouseY = evt.clientY;
+		// }
+    //
+		// function onMouseUp(evt) {
+		// 	evt.preventDefault();
+    //
+		// 	mouseDown = false;
+		// }
+    //
+		// function addMouseHandler(canvas) {
+		// 	canvas.addEventListener('mousemove', function(e) {
+		// 		onMouseMove(e);
+		// 	}, false);
+		// 	canvas.addEventListener('mousedown', function(e) {
+		// 		onMouseDown(e);
+		// 	}, false);
+		// 	canvas.addEventListener('mouseup', function(e) {
+		// 		onMouseUp(e);
+		// 	}, false);
+		// }
+    //
+		// function rotateScene(deltaX, deltaY) {
+		// 	console.log(root);
+		// 	root.rotation.y += deltaX / 100;
+		// 	root.rotation.x += deltaY / 100;
+		// }
+
+		//
+
+
+		function animate() {
+
+			requestAnimationFrame(animate);
+
+			stats.begin();
+			render();
+			stats.end();
+
+		}
+
+		function render() {
+			renderer.render(scene, camera);
+
+		}
+	</script>
+
+</body>
+
+</html>
+
+<!-- cpu slowdown rate lower for simplistic scenes rotating isn't reproduceable for other file because differences could happen how you interact with it so to make it reproduceable write a script that will manually drag mouse or manually animate object run
+tests a few times, take average, discard fastest and slowest -->
+
+<!-- am finding that fbx binary format isn't supported, need to either convert to ascii or glTF format -->

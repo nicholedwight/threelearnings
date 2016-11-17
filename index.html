@@ -1,311 +1,256 @@
-<!-- <!DOCTYPE html>
-<html>
-	<head>
-		<meta charset=utf-8>
-		<title>Three JS babaaaayyy</title>
-		<style>
-			body { margin: 0; }
-			canvas { width: 100%; height: 100% }
-		</style>
-	</head>
-	<body>
-		<script src="js/three.js"></script>
-		<script>
-
-    var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-
-    var renderer = new THREE.WebGLRenderer();
-    renderer.setSize( window.innerWidth, window.innerHeight );
-    document.body.appendChild( renderer.domElement );
-
-    var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-    var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-    var cube = new THREE.Mesh( geometry, material );
-    scene.add( cube );
-
-    camera.position.z = 5;
-
-    function render() {
-    	requestAnimationFrame( render );
-      cube.rotation.x += 0.1;
-      cube.rotation.y += 0.1;
-    	renderer.render( scene, camera );
-    }
-    render();
-
-		</script>
-
-  <canvas></canvas>
-
-	</body>
-</html> -->
-
-
-
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>three.js canvas - geometry - cube</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		<style>
-			body {
-				font-family: Monospace;
-				background-color: #f0f0f0;
-				margin: 0px;
-				overflow: hidden;
+
+<head>
+	<title>three.js canvas - geometry - cube</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<style>
+		body {
+			font-family: Monospace;
+			background-color: #f0f0f0;
+			margin: 0px;
+			overflow: hidden;
+		}
+		#status {
+				position:absolute;
+				width:25%;
+				left:2%;
+				top:70%;
+				height:5%;
+				opacity:.9;
+				font: 13px/1.231 "Lucida Grande", Lucida, Verdana, sans-serif;
 			}
-		</style>
-	</head>
-	<body>
+	</style>
+</head>
 
-		<script src="js/three.js"></script>
+<body>
+	<div id="status"></div>
+	<script src="js/three.js"></script>
 
-		<script src="js/renderers/Projector.js"></script>
-		<script src="js/renderers/CanvasRenderer.js"></script>
+	<script src="js/renderers/Projector.js"></script>
+	<script src="js/renderers/CanvasRenderer.js"></script>
 
-		<script src="js/libs/stats.min.js"></script>
+	<script src="js/libs/stats.min.js"></script>
 
-		<script>
+	<script>
+		var container, stats;
 
-			var container, stats;
+		var camera, scene, renderer;
 
-			var camera, scene, renderer;
+		var cube, plane, root;
 
-			var cube, plane;
+		var targetRotation = 0;
+		var targetRotationOnMouseDown = 0;
 
-			var targetRotation = 0;
-			var targetRotationOnMouseDown = 0;
+		var mouseX = 0;
+		var mouseXOnMouseDown = 0;
 
-			var mouseX = 0;
-			var mouseXOnMouseDown = 0;
+		var windowHalfX = window.innerWidth / 2;
+		var windowHalfY = window.innerHeight / 2;
+		init();
+		animate();
 
-			var windowHalfX = window.innerWidth / 2;
-			var windowHalfY = window.innerHeight / 2;
+		function init() {
+			var loadStartTime = Date.now();
+			var status = document.getElementById("status");
+			container = document.createElement('div');
+			document.body.appendChild(container);
 
-			init();
-			animate();
+			var info = document.createElement('div');
+			info.style.position = 'absolute';
+			info.style.top = '10px';
+			info.style.width = '100%';
+			info.style.textAlign = 'center';
+			info.innerHTML = 'Teapot JSON';
+			container.appendChild(info);
 
-			function init() {
+			camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
+			camera.position.z = 4;
 
-				container = document.createElement( 'div' );
-				document.body.appendChild( container );
+			scene = new THREE.Scene();
+			var ambient = new THREE.AmbientLight(0x444444);
+			scene.add(ambient);
+			var directionalLight = new THREE.DirectionalLight(0xAFEEEE);
+			directionalLight.position.set(0, 0, 1).normalize();
+			scene.add(directionalLight);
+			status.innerHTML = "Loading...";
 
-				var info = document.createElement( 'div' );
-				info.style.position = 'absolute';
-				info.style.top = '10px';
-				info.style.width = '100%';
-				info.style.textAlign = 'center';
-				info.innerHTML = 'Teapot JSON';
-				container.appendChild( info );
+			var objectLoader = new THREE.ObjectLoader();
+			objectLoader.load("teapot-claraio.json", function(obj) {
+				root = obj;
+				scene.add(obj);
 
-				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
-				camera.position.z = 4;
+			});
 
-				scene = new THREE.Scene();
-				var ambient = new THREE.AmbientLight( 0x444444 );
-				scene.add( ambient );
-				var directionalLight = new THREE.DirectionalLight( 0xffeedd );
-				directionalLight.position.set( 0, 0, 1 ).normalize();
-				scene.add( directionalLight );
-				var objectLoader = new THREE.ObjectLoader();
-				objectLoader.load("teapot-claraio.json", function ( obj ) {
-				 	scene.add( obj );
-				} );
 
-				renderer = new THREE.WebGLRenderer();
-				renderer.setClearColor( 0xf0f0f0 );
-				renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize( window.innerWidth, window.innerHeight );
-				container.appendChild( renderer.domElement );
 
-				stats = new Stats();
-				container.appendChild( stats.dom );
+			renderer = new THREE.WebGLRenderer();
+			renderer.setClearColor(0xafeeee);
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			container.appendChild(renderer.domElement);
 
-				document.addEventListener( 'mousedown', onMouseDown, false );
-				document.addEventListener( 'mousemove', onMouseMove, false );
-				// document.addEventListener( 'touchmove', onDocumentTouchMove, false );
+			stats = new Stats();
+			container.appendChild(stats.dom);
+			var loadEndTime = Date.now();
+			var loadTime = (loadEndTime - loadStartTime) / 1000;
+			status.innerHTML = "Load time: " + loadTime.toFixed(2) + " seconds.";
+			document.addEventListener('mousedown', onMouseDown, false);
+			document.addEventListener('mousemove', onMouseMove, false);
+			document.addEventListener('mouseup', onMouseUp, false);
 
-				//
+			window.addEventListener('resize', onWindowResize, false);
 
-				window.addEventListener( 'resize', onWindowResize, false );
+		}
 
-			}
+		function onWindowResize() {
 
-			// function init() {
-			// 	container = document.createElement( 'div' );
-			// 	document.body.appendChild( container );
-			// 	camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
-			// 	camera.position.z = 4;
-			// 	// scene
-			// 	scene = new THREE.Scene();
-			// 	var ambient = new THREE.AmbientLight( 0x444444 );
-			// 	scene.add( ambient );
-			// 	var directionalLight = new THREE.DirectionalLight( 0xffeedd );
-			// 	directionalLight.position.set( 0, 0, 1 ).normalize();
-			// 	scene.add( directionalLight );
-			// 	// BEGIN Clara.io JSON loader code
-			// 	var objectLoader = new THREE.ObjectLoader();
-			// 	objectLoader.load("teapot-claraio.json", function ( obj ) {
-			// 	 	scene.add( obj );
-			// 	} );
-			// 	// END Clara.io JSON loader code
-			// 	renderer = new THREE.WebGLRenderer();
-			// 	renderer.setPixelRatio( window.devicePixelRatio );
-			// 	renderer.setSize( window.innerWidth, window.innerHeight );
-			// 	container.appendChild( renderer.domElement );
-			// 	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-			// 	//
-			// 	window.addEventListener( 'resize', onWindowResize, false );
-			// }
+			windowHalfX = window.innerWidth / 2;
+			windowHalfY = window.innerHeight / 2;
 
-			function onWindowResize() {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
 
-				windowHalfX = window.innerWidth / 2;
-				windowHalfY = window.innerHeight / 2;
+			renderer.setSize(window.innerWidth, window.innerHeight);
 
-				camera.aspect = window.innerWidth / window.innerHeight;
-				camera.updateProjectionMatrix();
+		}
 
-				renderer.setSize( window.innerWidth, window.innerHeight );
+		var mouseDown = false,
+			mouseX = 0,
+			mouseY = 0;
 
+		function onMouseMove(evt) {
+			if (!mouseDown) {
+				return;
 			}
 
-			var mouseDown = false,
-        mouseX = 0,
-        mouseY = 0;
+			evt.preventDefault();
 
-    function onMouseMove(evt) {
-        if (!mouseDown) {
-            return;
-        }
+			var deltaX = evt.clientX - mouseX,
+				deltaY = evt.clientY - mouseY;
+			mouseX = evt.clientX;
+			mouseY = evt.clientY;
+			rotateScene(deltaX, deltaY);
+		}
 
-        evt.preventDefault();
+		function onMouseDown(evt) {
+			evt.preventDefault();
 
-        var deltaX = evt.clientX - mouseX,
-            deltaY = evt.clientY - mouseY;
-        mouseX = evt.clientX;
-        mouseY = evt.clientY;
-        rotateScene(deltaX, deltaY);
-    }
+			mouseDown = true;
+			mouseX = evt.clientX;
+			mouseY = evt.clientY;
+		}
 
-    function onMouseDown(evt) {
-        evt.preventDefault();
+		function onMouseUp(evt) {
+			evt.preventDefault();
 
-        mouseDown = true;
-        mouseX = evt.clientX;
-        mouseY = evt.clientY;
-    }
+			mouseDown = false;
+		}
 
-    function onMouseUp(evt) {
-        evt.preventDefault();
+		function addMouseHandler(canvas) {
+			canvas.addEventListener('mousemove', function(e) {
+				onMouseMove(e);
+			}, false);
+			canvas.addEventListener('mousedown', function(e) {
+				onMouseDown(e);
+			}, false);
+			canvas.addEventListener('mouseup', function(e) {
+				onMouseUp(e);
+			}, false);
+		}
 
-        mouseDown = false;
-    }
+		function rotateScene(deltaX, deltaY) {
+			console.log(root);
+			root.rotation.y += deltaX / 100;
+			root.rotation.x += deltaY / 100;
+		}
 
-    function addMouseHandler(canvas) {
-    canvas.addEventListener('mousemove', function (e) {
-        onMouseMove(e);
-    }, false);
-    canvas.addEventListener('mousedown', function (e) {
-        onMouseDown(e);
-    }, false);
-    canvas.addEventListener('mouseup', function (e) {
-        onMouseUp(e);
-    }, false);
-}
+		//
 
-    function rotateScene(deltaX, deltaY) {
-    root.rotation.y += deltaX / 100;
-    root.rotation.x += deltaY / 100;
-}
+		// function onDocumentMouseDown( event ) {
+		//
+		// 	event.preventDefault();
+		//
+		// 	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+		// 	document.addEventListener( 'mouseup', onDocumentMouseUp, false );
+		// 	document.addEventListener( 'mouseout', onDocumentMouseOut, false );
+		//
+		// 	mouseXOnMouseDown = event.clientX - windowHalfX;
+		// 	targetRotationOnMouseDown = targetRotation;
+		//
+		// }
+		//
+		// function onDocumentMouseMove( event ) {
+		//
+		// 	mouseX = event.clientX - windowHalfX;
+		//
+		// 	targetRotation = targetRotationOnMouseDown + ( mouseX - mouseXOnMouseDown ) * 0.02;
+		//
+		// }
+		//
+		// function onDocumentMouseUp( event ) {
+		//
+		// 	document.removeEventListener( 'mousemove', onDocumentMouseMove, false );
+		// 	document.removeEventListener( 'mouseup', onDocumentMouseUp, false );
+		// 	document.removeEventListener( 'mouseout', onDocumentMouseOut, false );
+		//
+		// }
+		//
+		// function onDocumentMouseOut( event ) {
+		//
+		// 	document.removeEventListener( 'mousemove', onDocumentMouseMove, false );
+		// 	document.removeEventListener( 'mouseup', onDocumentMouseUp, false );
+		// 	document.removeEventListener( 'mouseout', onDocumentMouseOut, false );
+		//
+		// }
+		//
+		// function onDocumentTouchStart( event ) {
+		//
+		// 	if ( event.touches.length === 1 ) {
+		//
+		// 		event.preventDefault();
+		//
+		// 		mouseXOnMouseDown = event.touches[ 0 ].pageX - windowHalfX;
+		// 		targetRotationOnMouseDown = targetRotation;
+		//
+		// 	}
+		//
+		// }
+		//
+		// function onDocumentTouchMove( event ) {
+		//
+		// 	if ( event.touches.length === 1 ) {
+		//
+		// 		event.preventDefault();
+		//
+		// 		mouseX = event.touches[ 0 ].pageX - windowHalfX;
+		// 		targetRotation = targetRotationOnMouseDown + ( mouseX - mouseXOnMouseDown ) * 0.05;
+		//
+		// 	}
 
-			//
+		// }
 
-			// function onDocumentMouseDown( event ) {
-			//
-			// 	event.preventDefault();
-			//
-			// 	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-			// 	document.addEventListener( 'mouseup', onDocumentMouseUp, false );
-			// 	document.addEventListener( 'mouseout', onDocumentMouseOut, false );
-			//
-			// 	mouseXOnMouseDown = event.clientX - windowHalfX;
-			// 	targetRotationOnMouseDown = targetRotation;
-			//
-			// }
-			//
-			// function onDocumentMouseMove( event ) {
-			//
-			// 	mouseX = event.clientX - windowHalfX;
-			//
-			// 	targetRotation = targetRotationOnMouseDown + ( mouseX - mouseXOnMouseDown ) * 0.02;
-			//
-			// }
-			//
-			// function onDocumentMouseUp( event ) {
-			//
-			// 	document.removeEventListener( 'mousemove', onDocumentMouseMove, false );
-			// 	document.removeEventListener( 'mouseup', onDocumentMouseUp, false );
-			// 	document.removeEventListener( 'mouseout', onDocumentMouseOut, false );
-			//
-			// }
-			//
-			// function onDocumentMouseOut( event ) {
-			//
-			// 	document.removeEventListener( 'mousemove', onDocumentMouseMove, false );
-			// 	document.removeEventListener( 'mouseup', onDocumentMouseUp, false );
-			// 	document.removeEventListener( 'mouseout', onDocumentMouseOut, false );
-			//
-			// }
-			//
-			// function onDocumentTouchStart( event ) {
-			//
-			// 	if ( event.touches.length === 1 ) {
-			//
-			// 		event.preventDefault();
-			//
-			// 		mouseXOnMouseDown = event.touches[ 0 ].pageX - windowHalfX;
-			// 		targetRotationOnMouseDown = targetRotation;
-			//
-			// 	}
-			//
-			// }
-			//
-			// function onDocumentTouchMove( event ) {
-			//
-			// 	if ( event.touches.length === 1 ) {
-			//
-			// 		event.preventDefault();
-			//
-			// 		mouseX = event.touches[ 0 ].pageX - windowHalfX;
-			// 		targetRotation = targetRotationOnMouseDown + ( mouseX - mouseXOnMouseDown ) * 0.05;
-			//
-			// 	}
 
-			// }
+		function animate() {
 
-			//
+			requestAnimationFrame(animate);
 
-			function animate() {
+			stats.begin();
+			render();
+			stats.end();
 
-				requestAnimationFrame( animate );
+		}
 
-				stats.begin();
-				render();
-				stats.end();
+		function render() {
+			renderer.render(scene, camera);
 
-			}
+		}
+	</script>
 
-			function render() {
+</body>
 
-				// plane.rotation.y = cube.rotation.y += ( targetRotation - cube.rotation.y ) * 0.05;
-				renderer.render( scene, camera );
-
-			}
-
-		</script>
-
-	</body>
 </html>
+
+cpu slowdown rate lower for simplistic scenes rotating isn't reproduceable for other file because differences could happen how you interact with it so to make it reproduceable write a script that will manually drag mouse or manually animate object run
+tests a few times, take average, discard fastest and slowest
