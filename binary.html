@@ -54,6 +54,8 @@
     var gltf = null;
 		init();
 		animate();
+		var startTime = performance.now();
+		var framecount = 0;
 
 		function init() {
 			var loadStartTime = Date.now();
@@ -66,11 +68,11 @@
 			info.style.top = '10px';
 			info.style.width = '100%';
 			info.style.textAlign = 'center';
-			info.innerHTML = 'Teapot Binary/glTF';
+			info.innerHTML = '40 Teapots Binary/glTF';
 			container.appendChild(info);
 
 			camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
-			camera.position.z = 4;
+			camera.position.z = 40;
 
 			controls = new THREE.TrackballControls( camera );
 			controls.rotateSpeed = 2.0;
@@ -98,34 +100,79 @@
 
 			var itmArr = [];
 	    var loader = new THREE.GLTFLoader();
+			var positions = [
+				{x: 4.73586928493551, y: 12.598330339608417, z: -4.800970921433838, dir: -0.000128210830986919},
+				{x: 5.829518310739341, y: 2.6435068071249557, z: 12.34597366547499, dir: 0.00398804398298867},
+				{x: -15.32173187701654, y: -13.987717941223586, z: 11.62036728188414, dir: -0.00669246375212746},
+				{x: -11.916334736514385, y: 3.22025012759255, z: 3.2744501638353762, dir: 0.0023351175524362854},
+				{x: 12.067519136318952, y: 2.2578696473717486, z: -5.532407231054615, dir: 0.0013037095976513946},
+				{x: -12.438262653320255, y: -2.3029807410915693, z: 5.9418604543152975, dir: 0.0018526190847079648},
+				{x: -15.026317521072773, y: -12.35247806841361, z: 6.445136622454957, dir: -0.0031320721892664286},
+				{x: 0.9216079025177715, y: -15.660552582282925, z: 3.3611440315728514, dir: -0.0056463094277227465},
+				{x: -11.105947925806223, y: -1.032694842437314, z: -9.695798262320881, dir: -0.00020623407915564717},
+				{x: -9.605362521384082, y: -12.114108094845779, z: 0.06899290405845804, dir: 0.00423355475330564},
+				{x: 0.19848733061019086, y: -17.935418128650102, z: -0.8309929895651802, dir: 0.0018375029164200197},
+				{x: 0.19116346320695143, y: -2.0100580481895935, z: -12.12574393244656, dir: 0.008090308730763305},
+				{x: 9.991077771752197, y: -1.9024873962879463, z: 5.347030239464932, dir: -0.0032141847601657838},
+				{x: 5.367738016060977, y: 3.8966088539083676, z: -0.6635913598486232, dir: 0.002041503669439175},
+				{x: 9.810953403029071, y: 8.119594853347326, z: 2.811520364940878, dir: -0.00213226920444852},
+				{x: 3.334493366004545, y: 2.2083266585324957, z: 3.9856693636352114, dir: -0.0019726905852865983},
+				{x: -11.150054488055154, y: -7.903041136371329, z: 0.3431472420745374, dir: 0.00043791480823646367},
+				{x: -0.1692054436874102, y: -5.754213536431756, z: 1.6309036670768728, dir: -0.0019495237935612587},
+				{x: -4.4995863436805195, y: -8.455890329509392, z: 5.591148726047281, dir: -0.006828993477607439},
+				{x: 3.6914240002742815, y: -1.6460017893042078, z: -9.272007332782577, dir: -0.004543546630295899},
+				{x: 2.2256566465699956, y: 17.29142329786236, z: -2.1149088866627963, dir: -0.002579298972184787},
+				{x: -10.292414172690588, y: -9.20693625358898, z: 6.43093075769956, dir: 0.00727149599122634},
+				{x: 7.1860745194496545, y: 6.843282483825992, z: 19.281080220765972, dir: -0.0006507067691741297},
+				{x: 13.736309654743621, y: 14.675654115483976, z: -5.445433528629424, dir: -0.0002343869205946092},
+				{x: -8.936996708911082, y: 11.488448232059048, z: 8.166589573186966, dir: 0.0012012826008331358},
+				{x: -9.374305556260701, y: 2.5349759368704117, z: -4.165821696472642, dir: 0.0006808807709324549},
+				{x: -5.637942783715797, y: -9.666758732857552, z: 11.287611141104644, dir: -0.0006523995684142881},
+				{x: 12.26365634929461, y: -11.630213451421438, z: 1.9402627142272388, dir: 0.0025096060215788053},
+				{x: 8.256030424179865, y: -9.689823727052534, z: 2.8603380449720284, dir: 0.0014516449259845744},
+				{x: 7.962765946760486, y: -9.635575873354, z: 12.400297168888251, dir: -0.005930833495039514},
+				{x: -1.4784167047933616, y: 9.842161866231937, z: 15.113264443043581, dir: 0.005508207429565924},
+				{x: -10.36774435315591, y: -2.0755671927958996, z: -1.5454135518875045, dir: 0.0006285004435213293},
+				{x: -4.45486802875056, y: -9.541056476394342, z: 18.07328273827702, dir: 0.00377246895596866},
+				{x: 10.162743354665803, y: -3.763963402336339, z: -3.847532422912523, dir: 0.0002794882176490732},
+				{x: -9.508590957320365, y: -2.4768847639703573, z: 1.7073567836196624, dir: 0.0001809301789697826},
+				{x: -11.05956932343462, y: 11.426743163014216, z: -4.9127151998308305, dir: 0.0018276508644665612},
+				{x: 2.407938033805772, y: 2.7309286872871397, z: -8.510727657630405, dir: 0.003857244080043949},
+				{x: -5.31187742040764, y: 12.301622215871442, z: -13.6525709272914, dir: -0.004603725166243202},
+				{x: -7.615283770279695, y: -8.930886456880947, z: -1.5944500523039906, dir: -0.005061635593817753},
+				{x: -9.472691808717123, y: 8.227094344397287, z: -18.04183031266494, dir: 0.007439107381748636}
+			];
 
 	    var url = "THISONE.gltf";
-			for (var i =0; i < 40; i++) {
+
+			var count = 0;
+			for (var i = 0; i < positions.length; i++) {
 		    loader.load(url, function (data) {
 						gltf = data;
 						var object = gltf.scene;
 						teapot = object;
-						teapot.position.z = (Math.random()-Math.random())*20;
-						teapot.position.x = (Math.random()-Math.random())*20;
-						teapot.position.y = (Math.random()-Math.random())*20;
-						teapot.dir = (Math.random()-Math.random())*.01;
+						teapot.position.z = positions[count].z;
+						teapot.position.x = positions[count].x;
+						teapot.position.y = positions[count].y;
+						teapot.dir = positions[count].dir;
 						teapot.scale.set( 0.5, 0.5, 0.5 );
 		        scene.add(teapot);
 						itmArr.push(teapot);
+						count ++;
 		    });
-			};
+			}
 
 			function animate(timestamp) {
 				for (var i = 0; i < itmArr.length; i++) {
 					var itm = itmArr[i];
 					if (i%3==0) {
-						itm.rotation.x+=itm.dir;
+						itm.rotation.x+=itm.dir*50;
 						itm.position.y+=itm.dir/2;
 					} else if (i%3==1) {
-						itm.rotation.x+=itm.dir;
+						itm.rotation.x+=itm.dir*50;
 						itm.position.y+=itm.dir/2;
 					} else {
-						itm.rotation.x+=itm.dir;
+						itm.rotation.x+=itm.dir*50;
 						itm.position.y+=itm.dir/2;
 					}
 				}
@@ -133,7 +180,6 @@
 				controls.update();
 				THREE.GLTFLoader.Shaders.update(scene, camera);
 			}
-
 			animate();
 
 
@@ -145,6 +191,7 @@
 
 			stats = new Stats();
 			container.appendChild(stats.dom);
+
 			var loadEndTime = Date.now();
 			var loadTime = (loadEndTime - loadStartTime) / 1000;
 			status.innerHTML = "Load time: " + loadTime.toFixed(2) + " seconds.";
@@ -168,11 +215,19 @@
 		function animate() {
 
 			requestAnimationFrame(animate);
-
+			framecount ++;
 			stats.begin();
 			render();
 			stats.end();
+			var nowTime = performance.now();
+			var elapseSeconds = nowTime - startTime;
+			if (elapseSeconds >= 1000) {
+				console.log(framecount);
+				startTime = nowTime;
+				framecount = 0;
+			}
 
+			// console.log(frames);
 		}
 
 		function render() {
