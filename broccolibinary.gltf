@@ -1,0 +1,29 @@
+{
+
+    "metadata": {
+        "formatVersion": 3.1,
+        "sourceFile": "broccoli.obj",
+        "generatedBy": "OBJConverter",
+        "vertices": 3348,
+        "faces": 3330,
+        "normals": 3348,
+        "uvs": 5382,
+        "materials": 1
+    },
+
+    "materials": [{
+        "DbgColor": 15658734,
+        "DbgIndex": 0,
+        "DbgName": "lambert8SG",
+        "colorDiffuse": [0.0, 0.0, 0.0],
+        "colorSpecular": [0.5, 0.5, 0.5],
+        "illumination": 2,
+        "mapDiffuse": "broccoli.jpg",
+        "opacity": 1.0,
+        "opticalDensity": 1.0,
+        "specularCoef": 96.078431
+    }],
+
+    "buffers": "broccolibinary.bin"
+
+}

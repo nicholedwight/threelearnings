@@ -88,13 +88,6 @@
 			scene.add(directionalLight);
 			status.innerHTML = "Loading...";
 
-			// var objectLoader = new THREE.ObjectLoader();
-			// objectLoader.load("teapot-claraio.json", function(obj) {
-			// 	root = obj;
-			// 	scene.add(obj);
-			//
-			// });
-
 			// WORKING BROCCOLI MODEL
 			// var broccoliMaterial = new THREE.MeshBasicMaterial();
 			// broccoliMaterial.map = THREE.ImageUtils.loadTexture('broccoli.jpg');
@@ -114,10 +107,8 @@
 			// broccoliMaterial.side = THREE.DoubleSide;
 			var itmArr = [];
 			var loader = new THREE.JSONLoader();
-			loader.load( 'teapot.js', function ( geometry, materials ) {
+			loader.load( 'glossyteapot.js', function ( geometry, materials ) {
 					var material = new THREE.MeshFaceMaterial(materials);
-
-
 					for (var i =0; i < 40; i++) {
 						var mesh = new THREE.Mesh( geometry, material );
 						mesh.position.z = (Math.random()-Math.random())*20;
@@ -128,7 +119,6 @@
 				    scene.add( mesh );
 						itmArr.push(mesh);
 					}
-					// root = mesh;
 			});
 
 			function animate(timestamp) {
@@ -162,10 +152,6 @@
 			var loadEndTime = Date.now();
 			var loadTime = (loadEndTime - loadStartTime) / 1000;
 			status.innerHTML = "Load time: " + loadTime.toFixed(2) + " seconds.";
-			// document.addEventListener('mousedown', onMouseDown, false);
-			// document.addEventListener('mousemove', onMouseMove, false);
-			// document.addEventListener('mouseup', onMouseUp, false);
-
 			window.addEventListener('resize', onWindowResize, false);
 
 		}
@@ -181,96 +167,6 @@
 			renderer.setSize(window.innerWidth, window.innerHeight);
 
 		}
-
-		var mouseDown = false,
-			mouseX = 0,
-			mouseY = 0;
-
-		// function onMouseMove(evt) {
-		// 	if (!mouseDown) {
-		// 		return;
-		// 	}
-		//
-		// 	evt.preventDefault();
-		//
-		// 	var deltaX = evt.clientX - mouseX,
-		// 		deltaY = evt.clientY - mouseY;
-		// 	mouseX = evt.clientX;
-		// 	mouseY = evt.clientY;
-		// 	rotateScene(deltaX, deltaY);
-		// }
-		//
-		// function onMouseDown(evt) {
-		// 	evt.preventDefault();
-		//
-		// 	mouseDown = true;
-		// 	mouseX = evt.clientX;
-		// 	mouseY = evt.clientY;
-		// }
-		//
-		// function onMouseUp(evt) {
-		// 	evt.preventDefault();
-		//
-		// 	mouseDown = false;
-		// }
-		//
-		// function addMouseHandler(canvas) {
-		// 	canvas.addEventListener('mousemove', function(e) {
-		// 		onMouseMove(e);
-		// 	}, false);
-		// 	canvas.addEventListener('mousedown', function(e) {
-		// 		onMouseDown(e);
-		// 	}, false);
-		// 	canvas.addEventListener('mouseup', function(e) {
-		// 		onMouseUp(e);
-		// 	}, false);
-		// }
-		//
-		// function rotateScene(deltaX, deltaY) {
-		// 	// console.log(root);
-		// 	root.rotation.y += deltaX / 100;
-		// 	root.rotation.x += deltaY / 100;
-		// }
-
-		//
-
-		// function onMouseDown( event ) {
-		//
-		// 		event.preventDefault();
-		//
-		// 		document.addEventListener( 'mousemove', onMouseMove, false );
-		// 		document.addEventListener( 'mouseup', onMouseUp, false );
-		// 		document.addEventListener( 'mouseout', onMouseOut, false );
-		//
-		// 		mouseXOnMouseDown = event.clientX - windowHalfX;
-		// 		targetRotationOnMouseDown = targetRotation;
-		//
-		// 	}
-		//
-		// 	function onMouseMove( event ) {
-		//
-		// 		mouseX = event.clientX - windowHalfX;
-		//
-		// 		targetRotation = targetRotationOnMouseDown + ( mouseX - mouseXOnMouseDown ) * 0.02;
-		//
-		// 	}
-		//
-		// 	function onMouseUp( event ) {
-		//
-		// 		document.removeEventListener( 'mousemove', onMouseMove, false );
-		// 		document.removeEventListener( 'mouseup', onMouseUp, false );
-		// 		document.removeEventListener( 'mouseout', onMouseOut, false );
-		//
-		// 	}
-		//
-		// 	function onMouseOut( event ) {
-		//
-		// 		document.removeEventListener( 'mousemove', onMouseMove, false );
-		// 		document.removeEventListener( 'mouseup', onMouseUp, false );
-		// 		document.removeEventListener( 'mouseout', onMouseOut, false );
-		//
-		// 	}
-
 
 		function animate() {
 

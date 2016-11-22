@@ -30,13 +30,15 @@
   <script src="js/controls/OrbitControls.js"></script>
 	<script src="js/renderers/Projector.js"></script>
 	<script src="js/renderers/CanvasRenderer.js"></script>
-  <script src="js/loaders/GLTFLoader.js"></script>
+	<script src="js/loaders/GLTFLoader.js"></script>
+	<script src="js/controls/TrackballControls.js"></script>
   <script src="js/Detector.js"></script>
 
 	<script src="js/libs/stats.min.js"></script>
 
 	<script>
     if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+		var gltf = null;
 		var container, stats;
 
 		var camera, scene, renderer;
@@ -70,6 +72,17 @@
 			camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
 			camera.position.z = 4;
 
+			controls = new THREE.TrackballControls( camera );
+			controls.rotateSpeed = 2.0;
+			controls.zoomSpeed = 1.2;
+			controls.panSpeed = 0.8;
+			controls.noZoom = false;
+			controls.noPan = false;
+			controls.staticMoving = true;
+			controls.dynamicDampingFactor = 0.3;
+			controls.keys = [ 65, 83, 68 ];
+			controls.addEventListener( 'change', render );
+
 			scene = new THREE.Scene();
 			var ambient = new THREE.AmbientLight(0x444444);
 			scene.add(ambient);
@@ -83,18 +96,46 @@
 	        console.log( item, loaded, total );
 	    };
 
+			var itmArr = [];
 	    var loader = new THREE.GLTFLoader();
 
-	    var url = "teapot.gltf";
-	    loader.load(url, function (data) {
-	        var object = data.scene;
-	        object.position.y -= 0.5;
-	        camera.position.copy(new THREE.Vector3(0, 2, 3));
-	        scene.add(object);
-	    });
+	    var url = "THISONE.gltf";
+			for (var i =0; i < 40; i++) {
+		    loader.load(url, function (data) {
+						gltf = data;
+						var object = gltf.scene;
+						teapot = object;
+						teapot.position.z = (Math.random()-Math.random())*20;
+						teapot.position.x = (Math.random()-Math.random())*20;
+						teapot.position.y = (Math.random()-Math.random())*20;
+						teapot.dir = (Math.random()-Math.random())*.01;
+						teapot.scale.set( 0.5, 0.5, 0.5 );
+		        scene.add(teapot);
+						itmArr.push(teapot);
+		    });
+			};
 
-	    var axis = new THREE.AxisHelper(1000);
-	    scene.add(axis);
+			function animate(timestamp) {
+				for (var i = 0; i < itmArr.length; i++) {
+					var itm = itmArr[i];
+					if (i%3==0) {
+						itm.rotation.x+=itm.dir;
+						itm.position.y+=itm.dir/2;
+					} else if (i%3==1) {
+						itm.rotation.x+=itm.dir;
+						itm.position.y+=itm.dir/2;
+					} else {
+						itm.rotation.x+=itm.dir;
+						itm.position.y+=itm.dir/2;
+					}
+				}
+				requestAnimationFrame(animate);
+				controls.update();
+				THREE.GLTFLoader.Shaders.update(scene, camera);
+			}
+
+			animate();
+
 
 			renderer = new THREE.WebGLRenderer();
 			renderer.setClearColor(0xafeeee);
@@ -102,28 +143,11 @@
 			renderer.setSize(window.innerWidth, window.innerHeight);
 			container.appendChild(renderer.domElement);
 
-			controls = new THREE.OrbitControls( camera, renderer.domElement );
-	    controls.userPan = false;
-	    controls.userPanSpeed = 0.0;
-	    controls.maxDistance = 5000.0;
-	    controls.maxPolarAngle = Math.PI * 0.495;
-	    controls.autoRotate = true;
-	    controls.autoRotateSpeed = -10.0;
-
 			stats = new Stats();
 			container.appendChild(stats.dom);
 			var loadEndTime = Date.now();
 			var loadTime = (loadEndTime - loadStartTime) / 1000;
 			status.innerHTML = "Load time: " + loadTime.toFixed(2) + " seconds.";
-      // controls = new THREE.OrbitControls( camera, renderer.domElement );
-			// controls.target.set( 0, 12, 0 );
-			// camera.position.set( 2, 18, 28 );
-			// controls.update();
-
-			// document.addEventListener('mousedown', onMouseDown, false);
-			// document.addEventListener('mousemove', onMouseMove, false);
-			// document.addEventListener('mouseup', onMouseUp, false);
-
 			window.addEventListener('resize', onWindowResize, false);
 
 		}
@@ -139,58 +163,6 @@
 			renderer.setSize(window.innerWidth, window.innerHeight);
 
 		}
-
-		// var mouseDown = false,
-		// 	mouseX = 0,
-		// 	mouseY = 0;
-    //
-		// function onMouseMove(evt) {
-		// 	if (!mouseDown) {
-		// 		return;
-		// 	}
-    //
-		// 	evt.preventDefault();
-    //
-		// 	var deltaX = evt.clientX - mouseX,
-		// 		deltaY = evt.clientY - mouseY;
-		// 	mouseX = evt.clientX;
-		// 	mouseY = evt.clientY;
-		// 	rotateScene(deltaX, deltaY);
-		// }
-    //
-		// function onMouseDown(evt) {
-		// 	evt.preventDefault();
-    //
-		// 	mouseDown = true;
-		// 	mouseX = evt.clientX;
-		// 	mouseY = evt.clientY;
-		// }
-    //
-		// function onMouseUp(evt) {
-		// 	evt.preventDefault();
-    //
-		// 	mouseDown = false;
-		// }
-    //
-		// function addMouseHandler(canvas) {
-		// 	canvas.addEventListener('mousemove', function(e) {
-		// 		onMouseMove(e);
-		// 	}, false);
-		// 	canvas.addEventListener('mousedown', function(e) {
-		// 		onMouseDown(e);
-		// 	}, false);
-		// 	canvas.addEventListener('mouseup', function(e) {
-		// 		onMouseUp(e);
-		// 	}, false);
-		// }
-    //
-		// function rotateScene(deltaX, deltaY) {
-		// 	console.log(root);
-		// 	root.rotation.y += deltaX / 100;
-		// 	root.rotation.x += deltaY / 100;
-		// }
-
-		//
 
 
 		function animate() {

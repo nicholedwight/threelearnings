@@ -1,0 +1,29 @@
+{
+
+    "metadata" :
+    {
+        "formatVersion" : 3.1,
+        "sourceFile"    : "glossyteapot.obj",
+        "generatedBy"   : "OBJConverter",
+        "vertices"      : 51334,
+        "faces"         : 50892,
+        "normals"       : 50968,
+        "uvs"           : 0,
+        "materials"     : 1
+    },
+
+    "materials": [	{
+	"DbgColor" : 15658734,
+	"DbgIndex" : 0,
+	"DbgName" : "Glossy",
+	"colorDiffuse" : [0.64, 0.64, 0.512],
+	"colorSpecular" : [0.25, 0.25, 0.25],
+	"illumination" : 2,
+	"opacity" : 1.0,
+	"opticalDensity" : 1.0,
+	"specularCoef" : 96.078431
+	}],
+
+    "buffers": "convertedteapot.bin"
+
+}
