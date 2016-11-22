@@ -76,14 +76,24 @@
 			scene.add(directionalLight);
 			status.innerHTML = "Loading...";
 
-			var objectLoader = new THREE.ObjectLoader();
-			objectLoader.load("teapot-claraio.json", function(obj) {
-				root = obj;
-				scene.add(obj);
-
+			// var objectLoader = new THREE.ObjectLoader();
+			// objectLoader.load("teapot-claraio.json", function(obj) {
+			// 	root = obj;
+			// 	scene.add(obj);
+			//
+			// });
+			var broccoliMaterial = new THREE.MeshBasicMaterial();
+			broccoliMaterial.map = THREE.ImageUtils.loadTexture('broccoli.jpg');
+			broccoliMaterial.side = THREE.DoubleSide;
+			var loader = new THREE.JSONLoader();
+			loader.load( 'broccoli.js', function ( geometry ) {
+					// var material = new THREE.MeshFaceMaterial(materials);
+					// console.log(material);
+			    var mesh = new THREE.Mesh( geometry, broccoliMaterial );
+					root = mesh;
+					mesh.scale.set( 5, 5, 5 );
+			    scene.add( mesh );
 			});
-
-
 
 			renderer = new THREE.WebGLRenderer();
 			renderer.setClearColor(0xafeeee);
@@ -161,7 +171,7 @@
 		}
 
 		function rotateScene(deltaX, deltaY) {
-			console.log(root);
+			// console.log(root);
 			root.rotation.y += deltaX / 100;
 			root.rotation.x += deltaY / 100;
 		}
@@ -252,5 +262,5 @@
 
 </html>
 
-cpu slowdown rate lower for simplistic scenes rotating isn't reproduceable for other file because differences could happen how you interact with it so to make it reproduceable write a script that will manually drag mouse or manually animate object run
-tests a few times, take average, discard fastest and slowest
+<!-- cpu slowdown rate lower for simplistic scenes rotating isn't reproduceable for other file because differences could happen how you interact with it so to make it reproduceable write a script that will manually drag mouse or manually animate object run
+tests a few times, take average, discard fastest and slowest -->
