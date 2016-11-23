@@ -72,17 +72,17 @@
 
 			camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
 			camera.position.z = 40;
-			camera.rotation.x = 90 * Math.PI / 180;
-			controls = new THREE.TrackballControls( camera );
-			controls.rotateSpeed = 2.0;
-			controls.zoomSpeed = 1.2;
-			controls.panSpeed = 0.8;
-			controls.noZoom = false;
-			controls.noPan = false;
-			controls.staticMoving = true;
-			controls.dynamicDampingFactor = 0.3;
-			controls.keys = [ 65, 83, 68 ];
-			controls.addEventListener( 'change', render );
+
+			// controls = new THREE.TrackballControls( camera );
+			// controls.rotateSpeed = 2.0;
+			// controls.zoomSpeed = 1.2;
+			// controls.panSpeed = 0.8;
+			// controls.noZoom = false;
+			// controls.noPan = false;
+			// controls.staticMoving = true;
+			// controls.dynamicDampingFactor = 0.3;
+			// controls.keys = [ 65, 83, 68 ];
+			// controls.addEventListener( 'change', render );
 
 			scene = new THREE.Scene();
 			var ambient = new THREE.AmbientLight(0x444444);
@@ -182,10 +182,29 @@
 					}
 				}
 				requestAnimationFrame(animate);
-				controls.update();
+				rotateCam();
+				// controls.update();
 			}
 
 			animate();
+
+			var radX = 0;
+		  var radY = 0;
+		  function rotateCam(){
+		    radX += .01;
+		    radY += .001;
+		    /*
+		      quote
+		      http://www.gaea.jcn.nihon-u.ac.jp/~kawane/mathformula/02figure/formula0204/form020413.xhtml
+		    */
+		    var x = 40 * Math.sin(radX) * Math.cos(radY);
+		    var y = 40 * Math.sin(radX) * Math.sin(radY);
+		    var z = 40 * Math.cos(radX);
+
+		    camera.position.set(x, y, z);
+		    camera.lookAt(new THREE.Vector3(0,0,0));
+		  };
+
 
 			renderer = new THREE.WebGLRenderer();
 			renderer.setClearColor(0xafeeee);
