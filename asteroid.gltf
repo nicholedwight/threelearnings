@@ -94,9 +94,32 @@
             "type": "perspective"
         }
     },
+    "extensions": {
+        "KHR_materials_common": {
+            "lights": {
+                "directionalLightShape1-lib": {
+                    "directional": {
+                        "color": [
+                            1,
+                            1,
+                            1
+                        ]
+                    },
+                    "name": "directionalLightShape1",
+                    "type": "directional"
+                }
+            }
+        }
+    },
     "extensionsUsed": [
         "KHR_materials_common"
     ],
+    "images": {
+        "file2": {
+            "name": "file2",
+            "uri": "asteroid.jpg"
+        }
+    },
     "materials": {
         "asteroid-effect": {
             "extensions": {
