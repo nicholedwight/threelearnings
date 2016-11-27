@@ -103,6 +103,47 @@
 
 			var itmArr = [];
 			var asteroidArr = [];
+			var asteroidZArr = [
+				{x: 17, y: 12.598330339608417, z:18},
+				{x: 7, y: 12.598330339608417, z:-12},
+				{x: -20, y: 12.598330339608417, z:-8},
+				{x: 8, y: 12.598330339608417, z:16},
+				{x: -16, y: 12.598330339608417, z:7},
+				{x: -7, y: 12.598330339608417, z:15},
+				{x: -19, y: 12.598330339608417, z:-16},
+				{x: -14, y: 12.598330339608417, z:14},
+				{x: 15, y: 12.598330339608417, z:16},
+				{x: 21, y: 12.598330339608417, z:-19},
+				{x: -5, y: 12.598330339608417, z:19},
+				{x: 11, y: 12.598330339608417, z:-11},
+				{x: -9, y: 12.598330339608417, z:10},
+				{x: 4, y: 12.598330339608417, z:-12},
+				{x: 11, y: 12.598330339608417, z:-9},
+				{x: 16, y: 12.598330339608417, z:7},
+				{x: -15, y: 12.598330339608417, z:20},
+				{x: 13, y: 12.598330339608417, z:19},
+				{x: -20, y: 12.598330339608417, z:-8},
+				{x: -8, y: 12.598330339608417, z:6},
+				{x: -14, y: 12.598330339608417, z:8},
+				{x: -10, y: 12.598330339608417, z:4},
+				{x: -5, y: 12.598330339608417, z:15},
+				{x: 23, y: 12.598330339608417, z:20},
+				{x: -16, y: 12.598330339608417, z:18},
+				{x: 7, y: 12.598330339608417, z:-16},
+				{x: 10, y: 12.598330339608417, z:-5},
+				{x: 10, y: 12.598330339608417, z:-7},
+				{x: -8, y: 12.598330339608417, z:-17},
+				{x: -8, y: 12.598330339608417, z:-20},
+				{x: -16, y: 12.598330339608417, z:-18},
+				{x: 16, y: 12.598330339608417, z:-8},
+				{x: -11, y: 12.598330339608417, z:-7},
+				{x: 20, y: 12.598330339608417, z:15},
+				{x: 11, y: 12.598330339608417, z:15},
+				{x: 24, y: 12.598330339608417, z:18},
+				{x: 11, y: 12.598330339608417, z:-4},
+				{x: 11, y: 12.598330339608417, z:-18},
+				{x: -20, y: 12.598330339608417, z:6}
+			];
 	    var loader = new THREE.GLTFLoader();
 			var positions = [
 				{x: 4.73586928493551, y: 12.598330339608417, z: -4.800970921433838, dir: -0.000128210830986919},
@@ -172,25 +213,25 @@
 
 			var url = "asteroid.gltf";
 			var asteroidCount = 0;
-			var asteroidZ = -15;
-			for (var i = 0; i < positions.length; i++) {
+			for (var i = 0; i < asteroidZArr.length; i++) {
 		    loader.load(url, function (data) {
-						max = -50,min = 50
-						var t = 0.01;
 						gltf = data;
 						var object = gltf.scene;
 						asteroid = object;
-						asteroid.position.x = Math.floor(Math.random()*100) - 49;
+						// asteroid.position.x = Math.floor(Math.random()*100) - 49;
+						asteroid.position.x = asteroidZArr[asteroidCount].x;
+						// asteroid.position.x = 20;
 						asteroid.position.y = 0;
-    				asteroid.position.z = asteroidZ;
-						asteroid.dir = Math.floor(Math.random()*0.05) - 0.001;
-						asteroid.scale.set( 0.5, 0.5, 0.5 );
+    				// asteroid.position.z = 5;
+						asteroid.position.z = asteroidZArr[asteroidCount].z;
 		        scene.add(asteroid);
 						asteroidArr.push(asteroid);
 						asteroidCount ++;
-						asteroidZ ++;
+
+						console.log(asteroid.position.x);
 		    });
 			}
+			// console.log(z);
 
 			function animate(timestamp) {
 				for (var i = 0; i < itmArr.length; i++) {
@@ -210,7 +251,7 @@
 					var asteroid = asteroidArr[i];
 					var upVector = new THREE.Vector3( -3, 8, 4 );
 					var axis = center.position.clone().sub(upVector).normalize();
-					asteroid.position.applyAxisAngle( axis, .05 );
+					asteroid.position.applyAxisAngle( axis, .04 );
 			 }
 				requestAnimationFrame(animate);
 				// THREE.GLTFLoader.Shaders.update(scene, camera);
