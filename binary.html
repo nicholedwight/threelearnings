@@ -40,6 +40,7 @@
     if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 		var gltf = null;
 		var container, stats;
+		var center;
 
 		var camera, scene, renderer;
 
@@ -101,6 +102,7 @@
 	    };
 
 			var itmArr = [];
+			var asteroidArr = [];
 	    var loader = new THREE.GLTFLoader();
 			var positions = [
 				{x: 4.73586928493551, y: 12.598330339608417, z: -4.800970921433838, dir: -0.000128210830986919},
@@ -163,6 +165,32 @@
 						count ++;
 		    });
 			}
+			center = new THREE.Mesh( new THREE.CubeGeometry(25, 25, 25), new THREE.MeshLambertMaterial({ color: 0xCC0000 }));
+
+			var axis = new THREE.AxisHelper(1000);
+    scene.add(axis);
+
+			var url = "asteroid.gltf";
+			var asteroidCount = 0;
+			var asteroidZ = -15;
+			for (var i = 0; i < positions.length; i++) {
+		    loader.load(url, function (data) {
+						max = -50,min = 50
+						var t = 0.01;
+						gltf = data;
+						var object = gltf.scene;
+						asteroid = object;
+						asteroid.position.x = Math.floor(Math.random()*100) - 49;
+						asteroid.position.y = 0;
+    				asteroid.position.z = asteroidZ;
+						asteroid.dir = Math.floor(Math.random()*0.05) - 0.001;
+						asteroid.scale.set( 0.5, 0.5, 0.5 );
+		        scene.add(asteroid);
+						asteroidArr.push(asteroid);
+						asteroidCount ++;
+						asteroidZ ++;
+		    });
+			}
 
 			function animate(timestamp) {
 				for (var i = 0; i < itmArr.length; i++) {
@@ -178,9 +206,15 @@
 						itm.position.y+=itm.dir/2;
 					}
 				}
+				for (var i = 0; i < asteroidArr.length; i++) {
+					var asteroid = asteroidArr[i];
+					var upVector = new THREE.Vector3( -3, 8, 4 );
+					var axis = center.position.clone().sub(upVector).normalize();
+					asteroid.position.applyAxisAngle( axis, .05 );
+			 }
 				requestAnimationFrame(animate);
 				// THREE.GLTFLoader.Shaders.update(scene, camera);
-				rotateCam();
+				// rotateCam();
 				// controls.update();
 			}
 
@@ -188,6 +222,7 @@
 
 			var radX = 0;
 			var radY = 0;
+
 			function rotateCam(){
 				radX += .01;
 				radY += .001;
